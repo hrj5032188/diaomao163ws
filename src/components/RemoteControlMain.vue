@@ -1,6 +1,7 @@
 <template>
     <view class="content">
-        <a-modal v-model:visible="wsDialogVisible" title="填写叼毛 websocket 地址" :keyboard="false" :maskClosable="false" :closable="false">
+      <div class="title">叼毛网抑云</div>
+      <a-modal v-model:visible="wsDialogVisible" title="填写叼毛 websocket 地址" :keyboard="false" :maskClosable="false" :closable="false">
             <a-input v-model:value="wsurl" placeholder="192.168.0.1:23333">
                 <template #prefix>
                     <android-outlined style="color: rgba(0, 0, 0, 0.45)" />
@@ -32,7 +33,7 @@
             <div style="margin-top: 8px; color: #666; font-size: 14px">帮助：歌单 id 获取需要分享歌单链接</div>
         </a-modal>
         <view>
-            <div class="music-title">{{ musicName }}</div>
+          <div class="music-title">{{ musicName }}</div>
             <div class="music-singler">{{ singerName }}</div>
             <div class="mucic-lyric">{{ lyric }}</div>
         </view>
@@ -62,12 +63,12 @@
         </a-row>
         <a-row type="flex" justify="center" align="middle">
             <a-tooltip>
-                <template #title>收藏</template>
-                <heart-two-tone two-tone-color="#eb2f96" @click="action('like')" class="action" />
-            </a-tooltip>
-            <a-tooltip>
                 <template #title>取消收藏</template>
                 <frown-outlined @click="action('dislike')" class="action" />
+            </a-tooltip>
+            <a-tooltip>
+              <template #title>收藏</template>
+              <heart-two-tone two-tone-color="#eb2f96" @click="action('like')" class="action" />
             </a-tooltip>
             <a-tooltip>
                 <template #title>添加到指定歌单</template>
@@ -247,6 +248,7 @@ export default {
 .title {
     font-size: 36px;
     color: #8f8f94;
+    margin-bottom:32px;
 }
 
 .flex {
