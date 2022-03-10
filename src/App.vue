@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <RemoteContorlMain />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import RemoteContorlMain from './components/RemoteContorlMain.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    RemoteContorlMain
   }
 }
 </script>
