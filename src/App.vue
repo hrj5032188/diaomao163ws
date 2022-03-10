@@ -1,14 +1,14 @@
 <template>
-  <RemoteContorlMain />
+  <RemoteControlMain />
 </template>
 
 <script>
-import RemoteContorlMain from './components/RemoteContorlMain.vue'
+import RemoteControlMain from './components/RemoteControlMain.vue'
 
 export default {
   name: 'App',
   components: {
-    RemoteContorlMain
+    RemoteControlMain
   }
 }
 </script>
