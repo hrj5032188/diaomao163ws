@@ -1,7 +1,6 @@
 <template>
-    <view class="content">
-      <div class="title">叼毛网抑云</div>
-      <a-modal v-model:visible="wsDialogVisible" title="填写叼毛 websocket 地址" :keyboard="false" :maskClosable="false" :closable="false">
+    <div :class="{ content: !darkMode, contentBlack: darkMode }">
+        <a-modal v-model:visible="wsDialogVisible" title="填写叼毛 websocket 地址" :keyboard="false" :maskClosable="false" :closable="false">
             <a-input v-model:value="wsurl" placeholder="192.168.0.1:23333">
                 <template #prefix>
                     <android-outlined style="color: rgba(0, 0, 0, 0.45)" />
@@ -33,7 +32,7 @@
             <div style="margin-top: 8px; color: #666; font-size: 14px">帮助：歌单 id 获取需要分享歌单链接</div>
         </a-modal>
         <view>
-          <div class="music-title">{{ musicName }}</div>
+            <div class="music-title">{{ musicName }}</div>
             <div class="music-singler">{{ singerName }}</div>
             <div class="mucic-lyric">{{ lyric }}</div>
         </view>
@@ -67,12 +66,16 @@
                 <frown-outlined @click="action('dislike')" class="action" />
             </a-tooltip>
             <a-tooltip>
-              <template #title>收藏</template>
-              <heart-two-tone two-tone-color="#eb2f96" @click="action('like')" class="action" />
+                <template #title>收藏</template>
+                <heart-two-tone two-tone-color="#eb2f96" @click="action('like')" class="action" />
             </a-tooltip>
             <a-tooltip>
                 <template #title>添加到指定歌单</template>
                 <folder-add-outlined @click="onClickAddPlayList" class="action" />
+            </a-tooltip>
+            <a-tooltip>
+                <template #title>切换夜间模式</template>
+                <bulb-outlined @click="() => (darkMode = !darkMode)" class="action" />
             </a-tooltip>
         </a-row>
         <!-- <div>
@@ -88,7 +91,7 @@
             <button type="default" @click="action('like')">添加收藏</button>
             <button type="default" @click="action('dislike')">取消收藏</button>
         </view> -->
-    </view>
+    </div>
 </template>
 
 <script>
@@ -105,6 +108,7 @@ import {
     FrownOutlined,
     FolderAddOutlined,
     HeartTwoTone,
+    BulbOutlined,
 } from "@ant-design/icons-vue";
 export default {
     components: {
@@ -119,6 +123,7 @@ export default {
         FrownOutlined,
         FolderAddOutlined,
         HeartTwoTone,
+        BulbOutlined,
     },
     data() {
         return {
@@ -132,12 +137,13 @@ export default {
             wsLoading: false,
             playState: -1,
             playListDialogVisible: false,
+            darkMode: false,
         };
     },
     created() {
         this.wsurl = localStorage.getItem("wsurl") || "";
         this.playListId = localStorage.getItem("playListId") || "";
-        this.initWebSocket();
+        // this.initWebSocket();
     },
     onLoad() {},
     unmounted: function () {
@@ -225,10 +231,33 @@ export default {
 
 <style>
 .content {
+    padding-top: 60px;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* background-color: rgb(209, 22, 22); */
+}
+.contentBlack {
+    padding-top: 60px;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #26363e;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    /* justify-content: center; */
+
+    /* div{
+        color: #c9d1d9;
+    } */
+}
+.contentBlack div {
+    color: #f0f6fc;
 }
 
 .logo {
@@ -248,7 +277,7 @@ export default {
 .title {
     font-size: 36px;
     color: #8f8f94;
-    margin-bottom:32px;
+    margin-bottom: 32px;
 }
 
 .flex {
