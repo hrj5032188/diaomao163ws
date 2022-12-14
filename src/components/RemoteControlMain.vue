@@ -1,19 +1,17 @@
 <template>
     <div :class="{ content: !darkMode, contentBlack: darkMode }">
-        <a-modal v-model:visible="wsDialogVisible" title="填写叼毛 websocket 地址" :keyboard="false" :maskClosable="false" :closable="false">
-            <a-input v-model:value="wsurl" placeholder="192.168.0.1:23333">
+        <a-modal v-model:visible="wsDialogVisible" title="填写叼毛控制码" :keyboard="false" :maskClosable="false" :closable="false">
+            <a-input v-model:value="wsChannelCode" placeholder="">
                 <template #prefix>
                     <android-outlined style="color: rgba(0, 0, 0, 0.45)" />
                 </template>
                 <template #suffix>
-                    <a-tooltip title="ip:port形式">
+                    <a-tooltip title="控制码在叼毛设置打开远程开关可见">
                         <info-circle-outlined style="color: rgba(0, 0, 0, 0.45)" />
                     </a-tooltip>
                 </template>
             </a-input>
-            <div style="margin-top: 8px; color: #666; font-size: 14px">
-                帮助：请先保证手机和当前网页在同一局域网，手机ip在设置-状态信息-ip可以看到，端口号改为实际的
-            </div>
+            <div style="margin-top: 8px; color: #666; font-size: 14px"></div>
             <template #footer>
                 <a-button key="submit" type="primary" :loading="wsLoading" @click="initWebSocket">确定</a-button>
             </template>
@@ -110,6 +108,7 @@ import {
     HeartTwoTone,
     BulbOutlined,
 } from "@ant-design/icons-vue";
+import { v4 as uuidv4 } from "uuid";
 export default {
     components: {
         AndroidOutlined,
@@ -128,7 +127,7 @@ export default {
     data() {
         return {
             websock: null, // ws对象
-            wsurl: "", // wsServer地址
+            wsChannelCode: "",
             musicName: "", // 歌名
             singerName: "", // 歌手名
             lyric: "", // 歌词
@@ -141,27 +140,18 @@ export default {
         };
     },
     created() {
-        this.wsurl = localStorage.getItem("wsurl") || "";
+        this.wsChannelCode = localStorage.getItem("wsChannelCode") || "";
         this.playListId = localStorage.getItem("playListId") || "";
-        // this.initWebSocket();
+        this.initWebSocket();
     },
     onLoad() {},
     unmounted: function () {
-        this.websock.websocketclose(); //离开路由之后断开websocket连接
+        this.websocketclose(); //离开路由之后断开websocket连接
     },
     methods: {
         initWebSocket() {
-            let wsuri = this.wsurl || "";
-            if (wsuri.indexOf("ws://") < 0) {
-                wsuri = `ws://${wsuri}`;
-            }
-            const urlReg =
-                /^ws:\/\/(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5]):\d+$/;
-            if (!urlReg.test(wsuri)) {
-                message.error("websocket地址填写不合法！");
-                return;
-            }
-            localStorage.setItem("wsurl", wsuri);
+            let wsuri = "wss://hack.chat/chat-ws";
+            localStorage.setItem("wsChannelCode", this.wsChannelCode);
             console.log("initWebSocket", wsuri);
             this.wsLoading = true;
             this.websock = new WebSocket(wsuri);
@@ -173,26 +163,46 @@ export default {
         },
         websocketonopen() {
             this.wsDialogVisible = this.wsLoading = false;
+            let channelName = this.wsChannelCode;
+            console.log("channelName", channelName);
+            if (channelName !== "diaomao") channelName = "diaomao163_" + channelName;
+            const nickName = "diaomao_web_" + uuidv4().slice(0, 6);
+            this.websock.send('{"cmd":"join","channel":"' + channelName + '","nick":"' + nickName + '"}');
         },
         websocketonerror() {
             // this.initWebSocket();
             this.wsDialogVisible = true;
             this.wsLoading = false;
-            message.error("websocket连接失败，请检查ip:port");
+            message.error("websocket连接失败，请重试");
         },
         websocketonmessage(e) {
-            const redata = JSON.parse(e.data);
-            console.log("接受数据: ", redata);
-            if (redata.action === "music") {
-                this.musicName = redata.musicName;
-                this.singerName = redata.singerName;
-                this.playState = redata.state || -1;
-            } else if (redata.action === "lrc") {
-                this.lyric = redata.content;
+            const rawData = JSON.parse(e.data);
+            console.log("接受数据: ", rawData);
+            const cmd = rawData.cmd;
+            if (cmd != "chat") return;
+            const text = rawData.text;
+            try {
+                const redata = JSON.parse(text);
+                if (redata.action === "music") {
+                    if (this.musicName !== redata.musicName) {
+                        this.musicName = redata.musicName;
+                        this.singerName = redata.singerName;
+                        this.lyric = "";
+                    }
+                    this.playState = redata.state || 3;
+                } else if (redata.action === "lrc") {
+                    this.lyric = redata.content;
+                }
+            } catch (e) {
+                console.log(e);
             }
         },
-        websocketsend(Data) {
-            this.websock.send(Data);
+        websocketsend(data) {
+            const msg = {
+                cmd: "chat",
+                text: data,
+            };
+            this.websock.send(JSON.stringify(msg));
         },
         websocketclose(e) {
             console.log("断开连接", e);
