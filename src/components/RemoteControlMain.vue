@@ -142,7 +142,9 @@ export default {
     created() {
         this.wsChannelCode = localStorage.getItem("wsChannelCode") || "";
         this.playListId = localStorage.getItem("playListId") || "";
-        this.initWebSocket();
+        if (this.wsChannelCode.length > 0) {
+            this.initWebSocket();
+        }
     },
     onLoad() {},
     unmounted: function () {
