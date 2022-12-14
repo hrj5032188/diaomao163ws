@@ -194,6 +194,7 @@ export default {
                     this.playState = redata.state || 3;
                 } else if (redata.action === "lrc") {
                     this.lyric = redata.content;
+                    this.playState = 3;
                 }
             } catch (e) {
                 console.log(e);
