@@ -128,7 +128,7 @@ export default {
         return {
             websock: null, // ws对象
             wsChannelCode: "",
-            musicName: "", // 歌名
+            musicName: "暂无歌曲", // 歌名
             singerName: "", // 歌手名
             lyric: "", // 歌词
             playListId: "", // 歌单ID 通过分享url中获取
