@@ -75,6 +75,10 @@
                 <template #title>切换夜间模式</template>
                 <bulb-outlined @click="() => (darkMode = !darkMode)" class="action" />
             </a-tooltip>
+            <a-tooltip>
+                <template #title>帮助</template>
+                <question-outlined @click="() => (helpDialogVisible = true)" class="action" />
+            </a-tooltip>
         </a-row>
         <!-- <div>
             <button type="default" @click="action('playOrPause')">播放/暂停</button>
@@ -89,6 +93,16 @@
             <button type="default" @click="action('like')">添加收藏</button>
             <button type="default" @click="action('dislike')">取消收藏</button>
         </view> -->
+        <a-modal v-model:visible="helpDialogVisible" title="帮助">
+            <a-row> 1. 配合<a href="https://github.com/Xposed-Modules-Repo/com.blanke.diaomao163" target="_blank">叼毛网易云模块</a>使用 </a-row>
+            <a-row> 2. 需要填入控制码使用</a-row>
+            <a-row> 3. 本项目开源地址：<a href="https://github.com/hrj5032188/diaomao163ws/tree/client" target="_blank">点我</a></a-row>
+            <a-row> 4. MAC版本开源地址：<a href="https://github.com/Blankeer/diaomao163_mac" target="_blank">点我</a></a-row>
+            <div style="margin-top: 8px; color: #666; font-size: 14px"></div>
+            <template #footer>
+                <a-button key="submit" type="primary" @click="() => (helpDialogVisible = false)">确定</a-button>
+            </template>
+        </a-modal>
     </div>
 </template>
 
@@ -107,6 +121,7 @@ import {
     FolderAddOutlined,
     HeartTwoTone,
     BulbOutlined,
+    QuestionOutlined,
 } from "@ant-design/icons-vue";
 import { v4 as uuidv4 } from "uuid";
 export default {
@@ -123,6 +138,7 @@ export default {
         FolderAddOutlined,
         HeartTwoTone,
         BulbOutlined,
+        QuestionOutlined,
     },
     data() {
         return {
@@ -137,6 +153,7 @@ export default {
             playState: -1,
             playListDialogVisible: false,
             darkMode: false,
+            helpDialogVisible: false,
         };
     },
     created() {
@@ -152,8 +169,8 @@ export default {
     },
     methods: {
         initWebSocket() {
-            this.wsChannelCode  = (this.wsChannelCode||'').trim();
-            if(!this.wsChannelCode){
+            this.wsChannelCode = (this.wsChannelCode || "").trim();
+            if (!this.wsChannelCode) {
                 message.warn("控制码不能为空");
                 return;
             }
