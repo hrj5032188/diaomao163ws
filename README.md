@@ -1,5 +1,8 @@
 # dm163
 
+## 介绍
+服务端中转方案，网页作为 client 的实现版本
+
 ## Project setup
 ```
 npm install
