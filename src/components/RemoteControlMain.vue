@@ -152,7 +152,13 @@ export default {
     },
     methods: {
         initWebSocket() {
-            let wsuri = "wss://hack.chat/chat-ws";
+            this.wsChannelCode  = (this.wsChannelCode||'').trim();
+            if(!this.wsChannelCode){
+                message.warn("控制码不能为空");
+                return;
+            }
+            // let wsuri = "wss://hack.chat/chat-ws";
+            let wsuri = "ws://106.53.118.247:14000/ws";
             localStorage.setItem("wsChannelCode", this.wsChannelCode);
             console.log("initWebSocket", wsuri);
             this.wsLoading = true;
